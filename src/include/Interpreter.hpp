@@ -1,22 +1,13 @@
-#ifndef INTERPRETER_HPP
-#define INTERPRETER_HPP
+#ifndef INTERPRETER
+#define INTERPRETER
 
 #include <array>
 #include <vector>
-#include <exception>
 #include <string>
 #include <chip8types.hpp>
+#include <chipexceptions.hpp>
 
 namespace {
-    class MemoryException : public std::exception {
-        private:
-            std::string message;
-
-        public:
-            MemoryException(u16);
-            const char* what() const noexcept override;
-    };
-
     class RegistersManager {
         private:
             std::array<u8, 16> registers;

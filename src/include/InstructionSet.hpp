@@ -17,15 +17,6 @@ class Console {
         virtual u8 getKey();
 };
 
-class InvalidOpcodeException : public std::exception {
-    private:
-        std::string message;
-
-    public:
-        InvalidOpcodeException(u16);
-        const char* what() const noexcept override;
-};
-
 class InstructionSetExecutor {
     private:
         Display* dsp;

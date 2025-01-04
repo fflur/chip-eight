@@ -7,15 +7,6 @@
 #include <SDL2/SDL_render.h>
 #include <InstructionSet.hpp>
 
-class InitializationException : public std::exception {
-    private:
-        std::string message;
-
-    public:
-        InitializationException(std::string);
-        const char* what() const noexcept override;
-};
-
 class MonochromeDisplay : public Display {
     private:
         int win_w;
