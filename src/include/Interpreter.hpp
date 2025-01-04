@@ -5,12 +5,9 @@
 #include <vector>
 #include <exception>
 #include <string>
-#include <cstdint>
+#include <chip8types.hpp>
 
 namespace {
-    using u8 = std::uint8_t;
-    using u16 = std::uint16_t;
-
     class MemoryException : public std::exception {
         private:
             std::string message;

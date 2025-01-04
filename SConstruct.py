@@ -1,9 +1,15 @@
 # Setting the environment construction variable.
 # CXX implies C++.
 evrm = Environment(
-    CXX = 'g++',       # Using GNU C++ compiler.
-    CXXVERSION = '20', # Using C++ 17.
-    CXXFLAGS = '-std=c++20'    # Suppress warnings.
+    # Using GNU C++ compiler.
+    CXX = 'g++',
+
+    # Using C++ 20 standard. Doesn't work for some reason.
+    CXXVERSION = '20',
+
+    # Suppress warnings.
+    # Using C++20 standard.
+    CXXFLAGS = '-std=c++20 -w'
 )
 
 Export('evrm')
