@@ -1,15 +1,5 @@
 #include <Display.hpp>
 
-//---InitializationException---//
-
-InitializationException::InitializationException(std::string msge) {
-    this->message = msge;
-}
-
-const char* InitializationException::what() const noexcept {
-    return this->message.c_str();
-}
-
 //---MonochromeDisplay---//
 
 MonochromeDisplay::MonochromeDisplay(std::string win_title) {

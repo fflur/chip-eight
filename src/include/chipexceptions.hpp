@@ -2,9 +2,17 @@
 #define CHIP_EIGHT_EXCEPTIONS
 
 #include <exception>
-#include <chip8types.hpp>
+#include <ChipTypes.hpp>
 
-class MemoryException : public std::exception {
+class ChipException : public std::exception {
+    private:
+        std::string message;
+
+    public:
+        const char* what() const noexcept override;
+};
+
+class MemoryException : public ChipException {
     private:
         std::string message;
 
@@ -13,7 +21,7 @@ class MemoryException : public std::exception {
         const char* what() const noexcept override;
 };
 
-class InvalidOpcodeException : public std::exception {
+class InvalidOpcodeException : public ChipException {
     private:
         std::string message;
 
@@ -22,7 +30,7 @@ class InvalidOpcodeException : public std::exception {
         const char* what() const noexcept override;
 };
 
-class InitializationException : public std::exception {
+class InitializationException : public ChipException {
     private:
         std::string message;
 

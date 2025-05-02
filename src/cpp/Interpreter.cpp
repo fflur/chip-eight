@@ -1,18 +1,5 @@
 #include <Interpreter.hpp>
 
-//---MemoryException---//
-
-MemoryException::MemoryException(u16 addr) {
-    this->message =
-        "Error: Trying to write at " +
-        std::to_string(addr) +
-        " which belongs to the system!";
-}
-
-const char* MemoryException::what() const noexcept {
-    return this->message.c_str();
-}
-
 //---RegistersManager---//
 
 RegistersManager::RegistersManager() {

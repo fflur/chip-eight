@@ -21,8 +21,11 @@ class InstructionSetExecutor {
     private:
         Display* dsp;
         Console* cnsl;
+        RegistersManager* rgtr_mngr;
+        Memory* mmory;
+
     public:
-        InstructionSetExecutor(Display*, Console*);
+        InstructionSetExecutor(RegistersManager*, Memory*, Display*, Console*);
         ~InstructionSetExecutor();
         void clearDisplay();//00E0
         void returnFromSubroutine();//00EE
