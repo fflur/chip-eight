@@ -84,13 +84,11 @@ Memory::Memory() {
 }
 
 void Memory::checkMemoryAccess(u16 addr) const {
-    if (addr <= 0x01FF || addr >= 0x0FFF)
-        throw MemoryException(addr);
+    if (addr <= 0x01FF || addr >= 0x0FFF) throw MemoryException(addr);
 }
 
 void Memory::read(u16 addr, u8* bytes_array, u8 arr_len) const {
-    for (u8 i = 0; i < arr_len; i++)
-        *(bytes_array + i) = this->mem[addr + i];
+    for (u8 i = 0; i < arr_len; i++) *(bytes_array + i) = this->mem[addr + i];
 }
 
 void Memory::write(u16 addr, u8* bytes, u8 arr_len) {
@@ -100,8 +98,25 @@ void Memory::write(u16 addr, u8* bytes, u8 arr_len) {
     }
 }
 
-u16 getFontAddr(u8 hex_font_val) {
+void  Memory::writeByte(u16 mory_addr, u8 value) {
+    this->checkMemoryAccess(mory_addr);
+    this->mem[mory_addr] = value;
+}
+
+u16 Memory::getFontAddr(u8 hex_font_val) const {
     return 0x000 + (hex_font_val * 5);
 }
 
-//------//
+void Memory::loadGame(std::array<u8, MAX_ROM_SIZE> rom_file) {
+    std::copy(
+        rom_file.begin(), // Source start
+        rom_file.end(), // Source end
+        this->mem.begin() + ROM_STARTING_POS // Destination start (index 512)
+    );
+}
+
+u16 Memory::fetchInstruction(u16 prog_cntr) const {
+    return (this->mem[prog_cntr] << 8) | this->mem[prog_cntr + 1];
+}
+
+//---//

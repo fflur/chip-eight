@@ -5,13 +5,13 @@
 InstructionSetExecutor::InstructionSetExecutor(
     RegistersManager* rgtr_mngr,
     Memory* mmory,
-    Display* display,
-    Console* console
+    Display* dsp,
+    Console* cnsl
 ) {
-    this->dsp = display;
-    this->cnsl = console;
+    this->dsp = dsp;
+    this->cnsl = cnsl;
     this->rgtr_mngr = rgtr_mngr;
-    this->mmory= mmory;
+    this->mmory = mmory;
 }
 
 InstructionSetExecutor::~InstructionSetExecutor() {
@@ -447,107 +447,107 @@ void InstructionDecoder::breakIntoNibbles(u16 instruct_code) {
 void InstructionDecoder::decode() {
     switch (this->nibbles[this->crnt_nble_pstn]) {
         case 0x0:
-            this->skipNibble();
-            this->decodeZeroPrefix();
-            break;
+        this->skipNibble();
+        this->decodeZeroPrefix();
+        break;
 
         case 0x1:
-            this->inst_exec->jumpToAddr(
-                this->assembleNibblesFrom(1)
-            );
-            break;
+        this->inst_exec->jumpToAddr(
+            this->assembleNibblesFrom(1)
+        );
+        break;
 
         case 0x2:
-            this->inst_exec->callSubroutineAt(
-                this->assembleNibblesFrom(1)
-            );
-            break;
+        this->inst_exec->callSubroutineAt(
+            this->assembleNibblesFrom(1)
+        );
+        break;
 
         case 0x3:
-            this->inst_exec->skipInstructionIf(
-                this->nibbles[1],
-                this->assembleNibblesFrom(2)
-            );
-            break;
+        this->inst_exec->skipInstructionIf(
+            this->nibbles[1],
+            this->assembleNibblesFrom(2)
+        );
+        break;
 
         case 0x4:
-            this->inst_exec->skipInstructionIfNot(
-                this->nibbles[1],
-                this->assembleNibblesFrom(2)
-            );
-            break;
+        this->inst_exec->skipInstructionIfNot(
+            this->nibbles[1],
+            this->assembleNibblesFrom(2)
+        );
+        break;
 
         case 0x5:
-            this->inst_exec->skipInstructionIfReg(
-                this->nibbles[1],
-                this->nibbles[2]
-            );
-            break;
+        this->inst_exec->skipInstructionIfReg(
+            this->nibbles[1],
+            this->nibbles[2]
+        );
+        break;
 
         case 0x6:
-            this->inst_exec->setRegTo(
-                this->nibbles[1],
-                this->assembleNibblesFrom(2)
-            );
-            break;
+        this->inst_exec->setRegTo(
+            this->nibbles[1],
+            this->assembleNibblesFrom(2)
+        );
+        break;
 
         case 0x7:
-            this->inst_exec->addValueToReg(
-                this->nibbles[1],
-                this->assembleNibblesFrom(2)
-            );
-            break;
+        this->inst_exec->addValueToReg(
+            this->nibbles[1],
+            this->assembleNibblesFrom(2)
+        );
+        break;
 
         case 0x8:
-            this->skipNibble();
-            this->decodeEightPrefix();
-            break;
+        this->skipNibble();
+        this->decodeEightPrefix();
+        break;
 
         case 0x9:
-            this->inst_exec->skipInstructionIfNotReg(
-                this->nibbles[1],
-                this->nibbles[2]
-            );
-            break;
+        this->inst_exec->skipInstructionIfNotReg(
+            this->nibbles[1],
+            this->nibbles[2]
+        );
+        break;
 
         case 0xA:
-            this->inst_exec->setRegI(this->assembleNibblesFrom(1));
-            break;
+        this->inst_exec->setRegI(this->assembleNibblesFrom(1));
+        break;
 
         case 0xB:
-            this->inst_exec->jumpToAddrWithRegZero(
-                this->assembleNibblesFrom(1)
-            );
-            break;
+        this->inst_exec->jumpToAddrWithRegZero(
+            this->assembleNibblesFrom(1)
+        );
+        break;
 
         case 0xC:
-            this->inst_exec->doAndWithRandom(
-                this->nibbles[1],
-                this->assembleNibblesFrom(2)
-            );
-            break;
+        this->inst_exec->doAndWithRandom(
+            this->nibbles[1],
+            this->assembleNibblesFrom(2)
+        );
+        break;
 
         case 0xD:
-            this->inst_exec->displaySprite(
-                this->nibbles[1],
-                this->nibbles[2],
-                this->nibbles[3]
-            );
-            break;
+        this->inst_exec->displaySprite(
+            this->nibbles[1],
+            this->nibbles[2],
+            this->nibbles[3]
+        );
+        break;
 
         case 0xE:
-            this->skipNibble();
-            this->decodeEPrefix();
-            break;
+        this->skipNibble();
+        this->decodeEPrefix();
+        break;
 
         case 0xF:
-            this->skipNibble();
-            this->decodeFPrefix();
-            break;
+        this->skipNibble();
+        this->decodeFPrefix();
+        break;
 
         default:
-            throw InvalidOpcodeException(this->instruction);
-            break;
+        throw InvalidOpcodeException(this->instruction);
+        break;
     }
 }
 

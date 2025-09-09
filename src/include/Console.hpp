@@ -4,12 +4,10 @@
 #include <InstructionSet.hpp>
 #include <SDL2/SDL.h>
 
-class HexConsole {
+class HexConsole : public Console {
     public:
-        HexConsole();
-        ~HexConsole();
-        bool isKeyPressed(u8);
-        u8 getKey();
+    bool isKeyPressed(u8) override;
+    u8 getKey() override;
 };
 
 #endif // !CONSOLE_HPP
