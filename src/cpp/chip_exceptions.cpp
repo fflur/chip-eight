@@ -1,4 +1,4 @@
-#include <ChipExceptions.hpp>
+#include <chip_exceptions.hpp>
 
 //---ChipException---//
 ChipException::ChipException() {

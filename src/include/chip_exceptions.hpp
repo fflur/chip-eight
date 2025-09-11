@@ -3,7 +3,7 @@
 
 #include <exception>
 #include <iostream>
-#include <ChipTypes.hpp>
+#include <chip_types.hpp>
 
 class ChipException : public std::exception {
     private:

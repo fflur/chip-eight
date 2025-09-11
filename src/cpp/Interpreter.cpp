@@ -1,4 +1,4 @@
-#include <Interpreter.hpp>
+#include <interpreter.hpp>
 
 //---RegistersManager---//
 

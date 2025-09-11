@@ -1,4 +1,4 @@
-#include <chipeight.hpp>
+#include <chip_eight.hpp>
 
 GameLoader::GameLoader(std::string file_path) {
     this->file_path = file_path;

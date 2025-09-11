@@ -4,8 +4,8 @@
 #include <array>
 #include <vector>
 #include <string>
-#include <ChipTypes.hpp>
-#include <ChipExceptions.hpp>
+#include <chip_types.hpp>
+#include <chip_exceptions.hpp>
 
 class RegistersManager {
     private:

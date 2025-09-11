@@ -5,7 +5,7 @@
 #include <SDL2/SDL_error.h>
 #include <SDL2/SDL_video.h>
 #include <SDL2/SDL_render.h>
-#include <InstructionSet.hpp>
+#include <instruction_set.hpp>
 
 class MonochromeDisplay : public Display {
     private:

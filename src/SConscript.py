@@ -5,12 +5,12 @@ evrm.Decider('content')
 
 def CompileToObject():
     # Creating object files. `CPPPATH` is used for implicit dependencies.
-    intr_ob = evrm.Object('cpp/Interpreter.cpp')
-    itrc_ob = evrm.Object('cpp/InstructionSet.cpp')
-    dspl_ob = evrm.Object('cpp/Display.cpp')
-    cnsl_ob = evrm.Object('cpp/Console.cpp')
-    mory_ob = evrm.Object('cpp/ChipExceptions.cpp')
-    chp8_ob = evrm.Object('cpp/chipeight.cpp')
+    intr_ob = evrm.Object('cpp/interpreter.cpp')
+    itrc_ob = evrm.Object('cpp/instruction_set.cpp')
+    dspl_ob = evrm.Object('cpp/display.cpp')
+    cnsl_ob = evrm.Object('cpp/console.cpp')
+    mory_ob = evrm.Object('cpp/chip_exceptions.cpp')
+    chp8_ob = evrm.Object('cpp/chip_eight.cpp')
 
     # `Depends` is used for explicit dependencies.
     evrm.Depends(intr_ob, mory_ob)

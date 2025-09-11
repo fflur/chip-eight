@@ -7,9 +7,9 @@
 #include <string>
 #include <array>
 #include <fstream>
-#include <ChipTypes.hpp>
-#include <Display.hpp>
-#include <Console.hpp>
+#include <chip_types.hpp>
+#include <display.hpp>
+#include <console.hpp>
 
 class GameLoader {
     private:

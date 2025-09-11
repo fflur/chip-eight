@@ -1,4 +1,4 @@
-#include <Display.hpp>
+#include <display.hpp>
 
 //---MonochromeDisplay---//
 

@@ -9,8 +9,8 @@
 #ifndef SDL_MAIN_HANDLED
 #define SDL_MAIN_HANDLED
 
-#include <chipeight.hpp>
-#include <ChipExceptions.hpp>
+#include <chip_eight.hpp>
+#include <chip_exceptions.hpp>
 
 int main (int argc, char *argv[]) {
     CHIP8 chp8;

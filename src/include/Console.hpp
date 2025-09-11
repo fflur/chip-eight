@@ -1,7 +1,7 @@
 #ifndef CONSOLE_HPP
 #define CONSOLE_HPP
 
-#include <InstructionSet.hpp>
+#include <instruction_set.hpp>
 #include <SDL2/SDL.h>
 
 class HexConsole : public Console {
