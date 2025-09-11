@@ -9,15 +9,15 @@ def CompileToObject():
     itrc_ob = evrm.Object('cpp/instruction_set.cpp')
     dspl_ob = evrm.Object('cpp/display.cpp')
     cnsl_ob = evrm.Object('cpp/console.cpp')
-    mory_ob = evrm.Object('cpp/chip_exceptions.cpp')
-    chp8_ob = evrm.Object('cpp/chip_eight.cpp')
+    chip_xcptn_ob = evrm.Object('cpp/chip_exceptions.cpp')
+    chip_eght_ob = evrm.Object('cpp/chip_eight.cpp')
 
     # `Depends` is used for explicit dependencies.
-    evrm.Depends(intr_ob, mory_ob)
+    evrm.Depends(intr_ob, chip_xcptn_ob)
     evrm.Depends(itrc_ob, intr_ob)
     evrm.Depends(dspl_ob, itrc_ob)
     evrm.Depends(cnsl_ob, itrc_ob)
-    evrm.Depends(chp8_ob, [dspl_ob, cnsl_ob])
+    evrm.Depends(chip_eght_ob, [dspl_ob, cnsl_ob])
 
     # Linking the object files to create the final executable.
     # evrm.Program(
