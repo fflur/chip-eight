@@ -7,7 +7,6 @@
 #include <string>
 #include <array>
 #include <fstream>
-#include <chip_types.hpp>
 #include <display.hpp>
 #include <console.hpp>
 
