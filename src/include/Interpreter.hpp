@@ -70,20 +70,4 @@ class RegistersManager {
     u8 getSoundTimer() const;
 };
 
-class Memory {
-    private:
-    std::array<u8, MAX_MEMORY_SIZE> mem;
-
-    void checkMemoryAccess(u16) const;
-
-    public:
-    Memory();
-    void read(u16, u8*, u8) const;
-    void write(u16, u8*, u8);
-    void writeByte(u16 addr, u8 num);
-    u16 getFontAddr(u8) const;
-    void loadGame(std::array<u8, MAX_ROM_SIZE>);
-    u16 fetchInstruction(u16) const;
-};
-
 #endif // !INTERPRETER_H
