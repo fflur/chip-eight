@@ -6,6 +6,41 @@
 #include <string>
 #include <chip_exceptions.hpp>
 
+// GeneralRegisters represent the 16 general purpose 8-bit registers (V0 to VF).
+// VF is used as a flag register for some instructions.
+// Therefore, the VF register should be handled differently.
+// The VF register is the 16th register (index 15).
+class GeneralRegisters {
+    private:
+    std::array<u8, 16> registers;
+};
+
+// This is the 16-bit register called I.
+// This register is generally used to store memory addresses,
+// so only the lowest (rightmost) 12 bits are usually used.
+class IndexRegister {
+    private:
+    u16 register_i;
+};
+
+// The program counter (PC) should be 16-bit,
+//and is used to store the currently executing address.
+class ProgramCounter {
+    private:
+    u16 program_counter;
+};
+
+
+// The stack is an array of 16 16-bit values,
+// used to store the address that the interpreter shoud return to
+// when finished with a subroutine.
+// Chip-8 allows for up to 16 levels of nested subroutines.
+class Stack {
+    private:
+    std::array<u16, 16> memory_addresses; //stores address for control.
+    u8 stack_pointer; //points to topmost level of stack.
+};
+
 class RegistersManager {
     private:
     std::array<u8, 16> registers;

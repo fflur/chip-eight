@@ -2,7 +2,7 @@
 #define CONSOLE_HPP
 
 #include <instruction_set.hpp>
-#include <SDL2/SDL.h>
+#include <SFML/Window.hpp>
 
 class HexConsole : public Console {
     public:
