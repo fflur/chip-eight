@@ -1,6 +1,4 @@
-#ifndef INTERPRETER
-#define INTERPRETER
-
+#pragma once
 #include <array>
 #include <vector>
 #include <string>
@@ -69,5 +67,3 @@ class RegistersManager {
     void setSoundTimer(u8);
     u8 getSoundTimer() const;
 };
-
-#endif // !INTERPRETER_H

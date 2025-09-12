@@ -1,3 +1,5 @@
+#pragma once
+
 #include <interpreter.hpp>
 
 // The Chip-8 language is capable of accessing up to 4KB (4,096 bytes) of RAM,
