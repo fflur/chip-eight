@@ -2,7 +2,7 @@
 #define INSTRUCTION_SET_HPP
 
 #include <random>
-#include <interpreter.hpp>
+#include <registers.hpp>
 
 class Display {
     public:

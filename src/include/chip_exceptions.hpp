@@ -1,6 +1,6 @@
 #pragma once
 #include <exception>
-#include <iostream>
+#include <string>
 #include <chip_types.hpp>
 
 class ChipException : public std::exception {
