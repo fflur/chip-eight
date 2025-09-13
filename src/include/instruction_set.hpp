@@ -3,6 +3,7 @@
 
 #include <random>
 #include <registers.hpp>
+#include <memory.hpp>
 
 class Display {
     public:

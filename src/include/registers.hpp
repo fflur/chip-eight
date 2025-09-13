@@ -1,6 +1,5 @@
 #pragma once
 #include <array>
-#include <vector>
 #include <chip_exceptions.hpp>
 
 // GeneralRegisters represent the 16 general purpose 8-bit registers (V0 to VF).
