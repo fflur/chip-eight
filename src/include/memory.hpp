@@ -1,6 +1,7 @@
 #pragma once
-
-#include <interpreter.hpp>
+#include <array>
+#include <chip_eight_constants.hpp>
+#include <chip_exceptions.hpp>
 
 // The Chip-8 language is capable of accessing up to 4KB (4,096 bytes) of RAM,
 // from location 0x000 (0) to 0xFFF (4095).
@@ -9,7 +10,7 @@
 // and should not be used by programs.
 class Memory {
     private:
-    std::array<u8, MAX_MEMORY_SIZE> mmry;
+    std::array<u8, MEMORY_SIZE> mmry;
 
     void checkMemoryAccess(u16) const;
 

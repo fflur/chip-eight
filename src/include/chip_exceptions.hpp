@@ -1,6 +1,4 @@
-#ifndef CHIP_EIGHT_EXCEPTIONS
-#define CHIP_EIGHT_EXCEPTIONS
-
+#pragma once
 #include <exception>
 #include <iostream>
 #include <chip_types.hpp>
@@ -55,4 +53,22 @@ class ROMLoadingException : public ChipException {
     const char* what() const noexcept override;
 };
 
-#endif // !CHIP_EIGHT_EXCEPTIONS
+class OverflowException : public ChipException {
+    private:
+    std::string message;
+
+    public:
+    OverflowException();
+    ~OverflowException();
+    const char* what() const noexcept override;
+};
+
+class UnderflowException : public ChipException {
+    private:
+    std::string message;
+
+    public:
+    UnderflowException();
+    ~UnderflowException();
+    const char* what() const noexcept override;
+};

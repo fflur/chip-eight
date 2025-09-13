@@ -1,6 +1,5 @@
 #include <chip_exceptions.hpp>
 
-//---ChipException---//
 ChipException::ChipException() {
     this->message = "Device Crashed!!!";
 }
@@ -11,8 +10,6 @@ const char* ChipException::what() const noexcept {
 
 ChipException::~ChipException() = default;
 
-//---MemoryException---//
-
 MemoryException::MemoryException(u16 addr) {
     this->message =
         "Error: Trying to write at " +
@@ -21,13 +18,11 @@ MemoryException::MemoryException(u16 addr) {
     ;
 }
 
+MemoryException::~MemoryException() = default;
+
 const char* MemoryException::what() const noexcept {
     return this->message.c_str();
 }
-
-MemoryException::~MemoryException() = default;
-
-//---InitializationException---//
 
 InitializationException::InitializationException(std::string comp_name) {
     this->message = "Failed to initialize " + comp_name + ".";
@@ -38,8 +33,6 @@ const char* InitializationException::what() const noexcept {
 }
 
 InitializationException::~InitializationException() = default;
-
-//---InvalidOpcodeException---//
 
 InvalidOpcodeException::InvalidOpcodeException(u16 opcode) {
     this->message =
@@ -55,8 +48,6 @@ const char* InvalidOpcodeException::what() const noexcept {
 
 InvalidOpcodeException::~InvalidOpcodeException() = default;
 
-//---ROMLoadingException---//
-
 ROMLoadingException::ROMLoadingException(std::string comp_name) {
     this->message = "Failed to load " + comp_name + " ROM file.";
 }
@@ -67,4 +58,22 @@ const char* ROMLoadingException::what() const noexcept {
 
 ROMLoadingException::~ROMLoadingException() = default;
 
-//---//
+OverflowException::OverflowException() {
+    this->message = "Error: Stack Overflow!";
+}
+
+OverflowException::~OverflowException() = default;
+
+const char* OverflowException::what() const noexcept {
+    return this->message.c_str();
+}
+
+UnderflowException::UnderflowException() {
+    this->message = "Error: Stack Underflow!";
+}
+
+UnderflowException::~UnderflowException() = default;
+
+const char* UnderflowException::what() const noexcept {
+    return this->message.c_str();
+}
