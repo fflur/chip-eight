@@ -16,7 +16,7 @@ class Memory {
 
     public:
     Memory();
-    void read(u16, u8*, u8) const;
+    void read(u16, u8*, u8) const; // TODO: Change to std::array
     void write(u16, u8*, u8);
     void writeByte(u16 addr, u8 num);
     u16 getFontAddr(u8) const;

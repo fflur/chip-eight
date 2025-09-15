@@ -28,8 +28,14 @@ void Memory::checkMemoryAccess(u16 addr) const {
     if (addr <= 0x01FF || addr >= 0x0FFF) throw MemoryException(addr);
 }
 
-void Memory::read(u16 addr, u8* bytes_array, u8 arr_len) const {
-    for (u8 i = 0; i < arr_len; i++) *(bytes_array + i) = this->mmry[addr + i];
+// TODO: Change to std::array
+void Memory::read(
+    u16 addr,
+    std::array<u8, MAX_ROM_SIZE>& bytes_array,
+    u8 arr_len
+) const {
+    for (u8 i = 0; i < arr_len; i++)
+        bytes_array[i] = this->mmry[addr + i];
 }
 
 void Memory::write(u16 addr, u8* bytes, u8 arr_len) {

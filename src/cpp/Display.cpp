@@ -56,9 +56,9 @@ MonochromeDisplay::~MonochromeDisplay() {
 
 void MonochromeDisplay::renderSprite(
     u8* ptr_sprite,
-    u8 array_len,
-    u8 x_coord,
-    u8 y_coord
+    u8  array_len,
+    u8  x_coord,
+    u8  y_coord
 ) {
     this->has_px_erased = false;
     u8 times = 7;

@@ -1,342 +1,287 @@
 #include <instruction_set.hpp>
 
 //---InstructionSetExecutor---//
+// This implementation still needs to be refactored.
+// In-progress.
 
 InstructionSetExecutor::InstructionSetExecutor(
-    RegistersManager* rgtr_mngr,
-    Memory* mmory,
-    Display* dsp,
+    Display* dspy,
     Console* cnsl
 ) {
-    this->dsp = dsp;
+    this->dspy = dspy;
     this->cnsl = cnsl;
-    this->rgtr_mngr = rgtr_mngr;
-    this->mmory = mmory;
 }
 
 InstructionSetExecutor::~InstructionSetExecutor() {
-    delete this->dsp;
+    delete this->dspy;
     delete this->cnsl;
-    delete this->rgtr_mngr;
-    delete this->mmory;
-    this->dsp = nullptr;
+    this->dspy = nullptr;
     this->cnsl = nullptr;
-    this->rgtr_mngr = nullptr;
-    this->mmory = nullptr;
 }
 
-//00E0
+// 00E0 - Clears the display.
 void InstructionSetExecutor::clearDisplay() {
-    this->dsp->clearScreen();
+    this->dspy->clearScreen();
 }
 
-//00EE
+// 00EE - Returns from a subroutine. The interpreter sets the program counter
+// to the address at the top of the stack, then subtracts the stack pointer by 1.
 void InstructionSetExecutor::returnFromSubroutine() {
-    this->rgtr_mngr->program_counter = this->rgtr_mngr->mem_addresses[
-        this->rgtr_mngr->stack_pointer
-    ];
-
-    this->rgtr_mngr->stack_pointer -= 1;
+    this->pgrm_cntr.set(this->stck.pop());
 }
 
-//1nnn
+// 1nnn - Jumps to address nnn. The interpreter sets the program counter to nnn.
 void InstructionSetExecutor::jumpToAddr(u16 addr) {
-    this->rgtr_mngr->program_counter = addr;
+    this->pgrm_cntr.set(addr);
 }
 
-//2nnn
+// 2nnn - Calls subroutine at nnn. The interpreter increments the stack pointer,
+// then puts the current PC on the top of the stack. The PC is then set to nnn.
 void InstructionSetExecutor::callSubroutineAt(u16 addr) {
-    this->rgtr_mngr->stack_pointer += 1;
-    this->rgtr_mngr->mem_addresses[this->rgtr_mngr->stack_pointer] =
-        this->rgtr_mngr->program_counter;
-    this->rgtr_mngr->program_counter = addr;
+    this->stck.push(this->pgrm_cntr.get());
+    this->pgrm_cntr.set(addr);
 }
 
-//3xkk
-void InstructionSetExecutor::skipInstructionIf(
-    u8 reg_no,
-    u8 value
-) {
-    if (this->rgtr_mngr->getRegisterValue(reg_no) == value)
-        this->rgtr_mngr->program_counter += 2;
+//3xkk - Skips the next instruction if Vx = kk. The interpreter compares
+// register Vx to kk, and if they are equal, increments the program counter by 2.
+void InstructionSetExecutor::skipInstructionIf(u8 rgtr_x, u8 value) {
+    if (this->gnrl_rgrs.read(rgtr_x) == value)
+        this->pgrm_cntr.increment();
 }
 
-//4xkk
-void InstructionSetExecutor::skipInstructionIfNot(
-    u8 reg_no,
-    u8 value
-) {
-    if (this->rgtr_mngr->getRegisterValue(reg_no) != value)
-        this->rgtr_mngr->program_counter += 2;
+// 4xkk - Skips the next instruction if Vx != kk. The interpreter compares
+// register Vx to kk, and if they are not equal, increments the program counter by 2.
+void InstructionSetExecutor::skipInstructionIfNot(u8 rgtr_x, u8 value) {
+    if (this->gnrl_rgrs.read(rgtr_x) != value)
+        this->pgrm_cntr.increment();
 }
 
-//5xy0
-void InstructionSetExecutor::skipInstructionIfReg(
-    u8 reg_x,
-    u8 reg_y
-) {
-    if (this->rgtr_mngr->getRegisterValue(reg_x) ==
-        this->rgtr_mngr->getRegisterValue(reg_y)
-    ) this->rgtr_mngr->program_counter += 2;
+// 5xy0 - Skips the next instruction if Vx = Vy. The interpreter compares
+// register Vx to register Vy, and if they are equal,
+// increments the program counter by 2.
+void InstructionSetExecutor::skipInstructionIfReg(u8 rgtr_x, u8 rgtr_y) {
+    if (this->gnrl_rgrs.read(rgtr_x) == this->gnrl_rgrs.read(rgtr_y))
+        this->pgrm_cntr.increment();
 }
 
-//6xkk
-void InstructionSetExecutor::setRegTo(
-    u8 reg_no,
-    u8 value
-) { this->rgtr_mngr->setRegisterValue(reg_no, value); }
+// 6xkk - Sets Vx = kk. The interpreter puts the value kk into register Vx.
+void InstructionSetExecutor::setRegTo(u8 rgtr_x, u8 value) {
+    this->gnrl_rgrs.write(rgtr_x, value);
+}
 
-//7xkk
-void InstructionSetExecutor::addValueToReg(
-    u8 reg_no,
-    u8 value
-) {
-    this->rgtr_mngr->setRegisterValue(
-        reg_no, 
-        this->rgtr_mngr->getRegisterValue(reg_no) + value
+// 7xkk - Adds kk to Vx. (Carry flag is not changed) The interpreter
+// adds the value kk to the value of register Vx, then stores the result
+// back in Vx.
+void InstructionSetExecutor::addValueToReg(u8 rgtr_x, u8 value) {
+    u16 result = this->gnrl_rgrs.read(rgtr_x) + value;
+    this->gnrl_rgrs.write(rgtr_x, result & 0xFF);
+}
+
+// 8xy0 - Sets Vx = Vy. Stores the value of register Vy in register Vx.
+// Stores the value of Vy in Vx.
+void InstructionSetExecutor::storeFromToReg(u8 rgtr_x, u8 rgtr_y) {
+    this->gnrl_rgrs.write(
+        rgtr_x,
+        this->gnrl_rgrs.read(rgtr_y)
     ); 
 }
 
-//8xy0
-void InstructionSetExecutor::storeFromToReg(
-    u8 reg_x,
-    u8 reg_y
-) {
-    this->rgtr_mngr->setRegisterValue(
-        reg_x,
-        this->rgtr_mngr->getRegisterValue(reg_y)
+//8xy1 - Set Vx = Vx OR Vy. Performs a bitwise OR on the values of Vx and Vy,
+// then stores the result in Vx.
+void InstructionSetExecutor::doOrOn(u8 rgtr_x, u8 rgtr_y) {
+    this->gnrl_rgrs.write(
+        rgtr_x,
+        this->gnrl_rgrs.read(rgtr_x) | this->gnrl_rgrs.read(rgtr_y)
     );
 }
 
-//8xy1
-void InstructionSetExecutor::doOrOn(
-    u8 reg_x,
-    u8 reg_y
-) {
-    u8 or_operation_result =
-        this->rgtr_mngr->getRegisterValue(reg_x) |
-        this->rgtr_mngr->getRegisterValue(reg_y)
-    ;
-
-    this->rgtr_mngr->setRegisterValue(
-        reg_x,
-        or_operation_result
+// 8xy2 - Set Vx = Vx AND Vy. Performs a bitwise AND on the values of Vx and Vy,
+// then stores the result in Vx.
+void InstructionSetExecutor::doAndOn(u8 rgtr_x, u8 rgtr_y) {
+    this->gnrl_rgrs.write(
+        rgtr_x,
+        this->gnrl_rgrs.read(rgtr_x) & this->gnrl_rgrs.read(rgtr_y)
     );
 }
 
-//8xy2
-void InstructionSetExecutor::doAndOn(
-    u8 reg_x,
-    u8 reg_y
-) {
-    u8 and_operation_result =
-        this->rgtr_mngr->getRegisterValue(reg_x) &
-        this->rgtr_mngr->getRegisterValue(reg_y)
-    ;
-
-    this->rgtr_mngr->setRegisterValue(
-        reg_x,
-        and_operation_result
+// 8xy3 - Set Vx = Vx XOR Vy. Performs a bitwise exclusive OR on the values of
+// Vx and Vy, then stores the result in Vx.
+void InstructionSetExecutor::doXorOn(u8 rgtr_x, u8 rgtr_y) {
+    this->gnrl_rgrs.write(
+        rgtr_x,
+        this->gnrl_rgrs.read(rgtr_x) ^ this->gnrl_rgrs.read(rgtr_y)
     );
 }
 
-//8xy3
-void InstructionSetExecutor::doXorOn(
-    u8 reg_x,
-    u8 reg_y
-) {
-    u8 xor_operation_result =
-        this->rgtr_mngr->getRegisterValue(reg_x) ^
-        this->rgtr_mngr->getRegisterValue(reg_y)
-    ;
+// 8xy4 - Set Vx = Vx + Vy, set VF = carry. If the sum of Vx and Vy
+// exceeds 8 bits (i.e., is greater than 255), VF is set to 1, otherwise 0.
+void InstructionSetExecutor::addAndCarry(u8 rgtr_x, u8 rgtr_y) {
+    u16 result = this->gnrl_rgrs.read(rgtr_x) + this->gnrl_rgrs.read(rgtr_y);
 
-    this->rgtr_mngr->setRegisterValue(
-        reg_x,
-        xor_operation_result
+    if (result > 255) this->gnrl_rgrs.setFlag(1);
+    else this->gnrl_rgrs.setFlag(0);
+
+    this->gnrl_rgrs.write(rgtr_x, result & 0xFF);
+}
+
+// 8xy5 - Set Vx = Vx - Vy, set VF = NOT borrow. If Vx > Vy, then VF is set to 1,
+// otherwise 0. Then Vy is subtracted from Vx, and the results stored in Vx.
+void InstructionSetExecutor::subAndBorrow(u8 rgtr_x, u8 rgtr_y) {
+    if (this->gnrl_rgrs.read(rgtr_x) > this->gnrl_rgrs.read(rgtr_y))
+        this->gnrl_rgrs.setFlag(1);
+    else
+        this->gnrl_rgrs.setFlag(0);
+
+    u16 result = this->gnrl_rgrs.read(rgtr_x) - this->gnrl_rgrs.read(rgtr_y);
+    this->gnrl_rgrs.write(rgtr_x, result & 0xFF);
+}
+
+// 8xy6 - Set Vx = Vx SHR 1. Stores the least significant bit of Vx in VF,
+// then shifts Vx to the right by 1 effectively dividing it by 2.
+void InstructionSetExecutor::carryAndLSB(u8 rgtr_x) {
+    if ((this->gnrl_rgrs.read(rgtr_x) & 0b00000001) == 1)
+        this->gnrl_rgrs.setFlag(1);
+    else
+        this->gnrl_rgrs.setFlag(0);
+
+    this->gnrl_rgrs.write(
+        rgtr_x,
+        this->gnrl_rgrs.read(rgtr_x) >> 1
     );
 }
 
-//8xy4
-void InstructionSetExecutor::addAndCarry(
-    u8 reg_x,
-    u8 reg_y
-) {
-    u16 result =
-        this->rgtr_mngr->getRegisterValue(reg_x) +
-        this->rgtr_mngr->getRegisterValue(reg_y)
-    ;
+// 8xy7 - Set Vx = Vy - Vx, set VF = NOT borrow.
+// If Vy > Vx, then VF is set to 1,
+// otherwise 0. Then Vx is subtracted from Vy, and the results stored in Vx.
+void InstructionSetExecutor::subtractAndFlag(u8 rgtr_x, u8 rgtr_y) {
+    if (this->gnrl_rgrs.read(rgtr_y) > this->gnrl_rgrs.read(rgtr_x))
+        this->gnrl_rgrs.setFlag(1);
+    else
+        this->gnrl_rgrs.setFlag(0);
 
-    if (result > 255) {
-        this->rgtr_mngr->setFlag(1);
-        this->rgtr_mngr->setRegisterValue(reg_x, result & 0b11111111);
-        return;
-    } else this->rgtr_mngr->setFlag(0);
-
-    this->rgtr_mngr->setRegisterValue(reg_x, result);
+    u16 result = this->gnrl_rgrs.read(rgtr_y) - this->gnrl_rgrs.read(rgtr_x);
+    this->gnrl_rgrs.write(rgtr_x, result & 0xFF);
 }
 
-//8xy5
-void InstructionSetExecutor::subAndBorrow(
-    u8 reg_x,
-    u8 reg_y
-) {
-    if (
-        this->rgtr_mngr->getRegisterValue(reg_x) >
-        this->rgtr_mngr->getRegisterValue(reg_y)
-    ) this->rgtr_mngr->setFlag(1);
-    else this->rgtr_mngr->setFlag(0);
+// 8xyE - Set Vx = Vx SHL 1. If the MSB of Vx is 1, then VF is set to 1,
+// otherwise 0. Then Vx is multiplied by 2.
+void InstructionSetExecutor::carryAndMSB(u8 rgtr_x, u8 rgtr_y) {
+    if ((this->gnrl_rgrs.read(rgtr_x) & 0b10000000) == 0b10000000)
+        this->gnrl_rgrs.setFlag(1);
+    else
+        this->gnrl_rgrs.setFlag(0);
 
-    this->rgtr_mngr->setRegisterValue(reg_x,
-        this->rgtr_mngr->getRegisterValue(reg_x) -
-        this->rgtr_mngr->getRegisterValue(reg_y)
+    this->gnrl_rgrs.write(
+        rgtr_x,
+        (this->gnrl_rgrs.read(rgtr_x) << 1) & 0xFF
     );
 }
 
-//8xy6
-void InstructionSetExecutor::carryAndLSB(u8 reg_no) {
-    if (this->rgtr_mngr->getRegisterValue(reg_no) & 0b1 == 1)
-        this->rgtr_mngr->setFlag(1);
-    else this->rgtr_mngr->setFlag(0);
-
-    this->rgtr_mngr->setRegisterValue(
-        reg_no,
-        (u8) this->rgtr_mngr->getRegisterValue(reg_no) / 2
-    );
+// 9xy0 - Skips the next instruction if Vx != Vy. The interpreter compares
+// register Vx to register Vy, and if they are not equal,
+// increments the program counter by 2.
+void InstructionSetExecutor::skipInstructionIfNotReg(u8 rgtr_x, u8 rgtr_y) {
+    if (this->gnrl_rgrs.read(rgtr_x) != this->gnrl_rgrs.read(rgtr_y))
+        this->pgrm_cntr.increment();
 }
 
-//8xy7
-void InstructionSetExecutor::subtractAndFlag(
-    u8 reg_x,
-    u8 reg_y
-) {
-    if (
-        this->rgtr_mngr->getRegisterValue(reg_x) >
-        this->rgtr_mngr->getRegisterValue(reg_y)
-    ) this->rgtr_mngr->setFlag(1);
-    else this->rgtr_mngr->setFlag(0);
-
-    this->rgtr_mngr->setRegisterValue(
-        reg_x,
-        this->rgtr_mngr->getRegisterValue(reg_y) -
-        this->rgtr_mngr->getRegisterValue(reg_x)
-    );
-}
-
-//8xyE
-void InstructionSetExecutor::carryAndMSB(
-    u8 reg_x,
-    u8 reg_y
-) {
-    if (((this->rgtr_mngr->getRegisterValue(reg_x) & 0b10000000) >> 7) == 1)
-        this->rgtr_mngr->setFlag(1);
-    else this->rgtr_mngr->setFlag(0);
-
-    this->rgtr_mngr->setRegisterValue(
-        reg_x,
-        this->rgtr_mngr->getRegisterValue(reg_x) * 2
-    );
-}
-
-//9xy0
-void InstructionSetExecutor::skipInstructionIfNotReg(
-        u8 reg_x,
-        u8 reg_y
-) {
-    if (this->rgtr_mngr->getRegisterValue(reg_x) !=
-        this->rgtr_mngr->getRegisterValue(reg_y)
-    ) this->rgtr_mngr->program_counter += 2;
-}
-
-//Annn
+// Annn - Sets I = nnn. The interpreter sets the index register to nnn.
 void InstructionSetExecutor::setRegI(u16 addr) {
-    this->rgtr_mngr->setMemoryAddress(addr);
+    this->indx_rgtr.set(addr);
 }
 
-//Bnnn
+// Bnnn - Jumps to address nnn + V0. The interpreter sets the program counter
+// to nnn plus the value of V0.
 void InstructionSetExecutor::jumpToAddrWithRegZero(u16 addr) {
-    this->rgtr_mngr->program_counter =
-        addr + this->rgtr_mngr->getRegisterValue(0);
+    u16 jump_addr = addr + this->gnrl_rgrs.read(0);
+    this->pgrm_cntr.set(jump_addr);
 }
 
-//Cxkk
-void InstructionSetExecutor::doAndWithRandom(u8 reg_no, u8 value) {
+// Cxkk - Sets Vx = random byte AND kk. The interpreter generates a random byte,
+// which is then ANDed with the value kk. The results are stored in Vx.
+void InstructionSetExecutor::doAndWithRandom(u8 rgtr_x, u8 value) {
     std::random_device rand_dvc;
     std::uniform_int_distribution<u8> dist(0, 255);
     u8 num = dist(rand_dvc);
     u8 anded_value = num & value;
-    this->rgtr_mngr->setRegisterValue(reg_no, anded_value);
+    this->gnrl_rgrs.write(rgtr_x, anded_value);
 }
 
-//Dxyn
-void InstructionSetExecutor::displaySprite(u8 reg_x, u8 reg_y, u8 n_byte) {
-    u8* sprite_array = new u8[n_byte];
+// Dxyn - Display n-byte sprite starting at memory location I at (Vx, Vy),
+// set VF = collision. The interpreter reads n bytes from memory, starting at
+// the address stored in I. These bytes are then displayed as sprites on screen
+// at coordinates (Vx, Vy). Sprites are XORed onto the existing screen.
+void InstructionSetExecutor::displaySprite(u8 rgtr_x, u8 rgtr_y, u8 n_byte) {
+    u8 x_coord = this->gnrl_rgrs.read(rgtr_x);
+    u8 y_coord = this->gnrl_rgrs.read(rgtr_y);
+    u8* sprite_data = new u8[n_byte];
 
-    this->mmory->read(
-        this->rgtr_mngr->getMemoryAddress(),
-        sprite_array,
+    this->mmry.read(
+        this->indx_rgtr.get(),
+        sprite_data,
         n_byte
     );
 
-    this->dsp->renderSprite(
-        sprite_array,
-        n_byte,
-        this->rgtr_mngr->getRegisterValue(reg_x),
-        this->rgtr_mngr->getRegisterValue(reg_y)
-    );
+    this->dspy->renderSprite(sprite_data, x_coord, y_coord, n_byte);
 
-    delete[] sprite_array;
-    sprite_array = nullptr;
+    if (this->dspy->hasPixelErased())
+        this->gnrl_rgrs.setFlag(1);
+    else
+        this->gnrl_rgrs.setFlag(0);
+
+    delete[] sprite_data;
+    sprite_data = nullptr;
 }
 
 //Ex9E
-void InstructionSetExecutor::skipInstructionIfKey(u8 reg_no) {
-    u8 key_value = this->rgtr_mngr->getRegisterValue(reg_no);
+void InstructionSetExecutor::skipInstructionIfKey(u8 rgtr_x) {
+    u8 key_value = this->rgtr_mngr->getRegisterValue(rgtr_x);
     if (this->cnsl->isKeyPressed(key_value))
         this->rgtr_mngr->program_counter += 2;
 }
 
 //ExA1
-void InstructionSetExecutor::skipInstructionIfKeyNot(u8 reg_no) {
-    u8 key_value = this->rgtr_mngr->getRegisterValue(reg_no);
+void InstructionSetExecutor::skipInstructionIfKeyNot(u8 rgtr_x) {
+    u8 key_value = this->rgtr_mngr->getRegisterValue(rgtr_x);
     if (!this->cnsl->isKeyPressed(key_value))
         this->rgtr_mngr->program_counter += 2;
 }
 
 //Fx07
-void InstructionSetExecutor::setDelayTimerValue(u8 reg_no) {
+void InstructionSetExecutor::setDelayTimerValue(u8 rgtr_x) {
     this->rgtr_mngr->setRegisterValue(
-        reg_no,
+        rgtr_x,
         this->rgtr_mngr->getDelayTimer()
     );
 }
 
 //Fx0A
-void InstructionSetExecutor::waitForKey(u8 reg_no) {
+void InstructionSetExecutor::waitForKey(u8 rgtr_x) {
     this->rgtr_mngr->setRegisterValue(
-        reg_no,
+        rgtr_x,
         this->cnsl->getKey()
     );
 }
 
 //Fx15
-void InstructionSetExecutor::setDelayTimer(u8 reg_no) {
+void InstructionSetExecutor::setDelayTimer(u8 rgtr_x) {
     this->rgtr_mngr->setDelayTimer(
-        this->rgtr_mngr->getRegisterValue(reg_no)
+        this->rgtr_mngr->getRegisterValue(rgtr_x)
     );
 }
 
 //Fx18
-void InstructionSetExecutor::setSoundTimer(u8 reg_no) {
+void InstructionSetExecutor::setSoundTimer(u8 rgtr_x) {
     this->rgtr_mngr->setSoundTimer(
-        this->rgtr_mngr->getRegisterValue(reg_no)
+        this->rgtr_mngr->getRegisterValue(rgtr_x)
     );
 }
 
 //Fx1E
-void InstructionSetExecutor::addStoreInRegI(u8 reg_x) {
+void InstructionSetExecutor::addStoreInRegI(u8 rgtr_x) {
     this->rgtr_mngr->setMemoryAddress(
         this->rgtr_mngr->getMemoryAddress() +
-        this->rgtr_mngr->getRegisterValue(reg_x)
+        this->rgtr_mngr->getRegisterValue(rgtr_x)
     );
 }
 
@@ -348,9 +293,9 @@ void InstructionSetExecutor::setFontSpriteLocation(u8 hex_val) {
 }
 
 //Fx33
-void InstructionSetExecutor::storeBCDOf(u8 reg_x) {
+void InstructionSetExecutor::storeBCDOf(u8 rgtr_x) {
     std::array<u8, 3> digits;
-    u8 num = this->rgtr_mngr->getRegisterValue(reg_x);
+    u8 num = this->rgtr_mngr->getRegisterValue(rgtr_x);
     u8 i = 0;
 
     while (num != 0) {
@@ -371,10 +316,10 @@ void InstructionSetExecutor::storeBCDOf(u8 reg_x) {
 }
 
 //Fx55
-void InstructionSetExecutor::writeToMemory(u8 reg_x) {
-    std::vector<u8> reg_data(reg_x + 1);
+void InstructionSetExecutor::writeToMemory(u8 rgtr_x) {
+    std::vector<u8> reg_data(rgtr_x + 1);
 
-    for (u8 i = 0; i < reg_x + 1; i++)
+    for (u8 i = 0; i < rgtr_x + 1; i++)
         reg_data[i] = this->rgtr_mngr->getRegisterValue(i);
 
     this->mmory->write(
@@ -385,26 +330,25 @@ void InstructionSetExecutor::writeToMemory(u8 reg_x) {
 }
 
 //Fx65
-void InstructionSetExecutor::readFromMemory(u8 reg_x) {
-    u8* reg_data = new u8[reg_x + 1];
+void InstructionSetExecutor::readFromMemory(u8 rgtr_x) {
+    u8* reg_data = new u8[rgtr_x + 1];
 
     this->mmory->read(
         this->rgtr_mngr->getMemoryAddress(),
         reg_data,
-        reg_x + 1
+        rgtr_x + 1
     );
 
-    for (u8 i = 0; i < reg_x + 1; i++)
+    for (u8 i = 0; i < rgtr_x + 1; i++)
         this->rgtr_mngr->setRegisterValue(i, reg_data[i]);
 
     delete[] reg_data;
     reg_data = nullptr;
     this->rgtr_mngr->setMemoryAddress(
-        this->rgtr_mngr->getMemoryAddress() + reg_x + 1
+        this->rgtr_mngr->getMemoryAddress() + rgtr_x + 1
     );
 }
 
-//---InstructionDecoder---//
 InstructionDecoder::InstructionDecoder(InstructionSetExecutor* inst_exec) {
     this->inst_exec = inst_exec;
     this->crnt_nble_pstn = 0;
