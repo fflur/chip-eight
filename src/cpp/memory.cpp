@@ -28,7 +28,7 @@ bool Memory::isMemoryAccessLegal(u16 addr) const {
     return true;
 }
 
-u8 Memory::read(u16 mory_addr) const {
+void Memory::read(u16 mory_addr) const {
     if (!this->isMemoryAccessLegal(mory_addr)) throw MemoryException(mory_addr);
     return this->mmry[mory_addr];
 }

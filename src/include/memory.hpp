@@ -16,7 +16,7 @@ class Memory {
 
     public:
     Memory();
-    u8 read(u16 mory_addr) const;
+    void read(u16 mory_addr) const;
     void write(u16 addr, u8 num);
     u16 getFontAddr(u8) const;
 };
