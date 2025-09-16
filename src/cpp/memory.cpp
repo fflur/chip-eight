@@ -23,16 +23,39 @@ Memory::Memory() {
     for (u8 i = 0; i < fonts.size(); i++) this->mmry[i] = fonts[i];
 }
 
-bool Memory::isMemoryAccessLegal(u16 addr) const {
+usize Memory::total_memory_size() const noexcept {
+    return this->mmry.size();
+}
+
+bool Memory::isMemoryAccessLegal(u16 addr) const noexcept {
     if (addr <= 0x01FF || addr >= 0x0FFF) return false;
     return true;
 }
 
-void Memory::read(u16 mory_addr) const {
+u8 Memory::read(u16 mory_addr) const {
     if (!this->isMemoryAccessLegal(mory_addr)) throw MemoryException(mory_addr);
     return this->mmry[mory_addr];
 }
 
-u16 Memory::getFontAddr(u8 hex_font_val) const {
-    return 0x000 + (hex_font_val * 5);
+void Memory::read(u16 mory_addr, std::span<u8> read_data) const {
+    if (!this->isMemoryAccessLegal(mory_addr)) throw MemoryException(mory_addr);
+
+    for (u8 i = 0; i < read_data.size(); i++)
+        read_data[i] = this->mmry[mory_addr + i];
+}
+
+void Memory::write(u16 mory_addr, u8 data) {
+    if (!this->isMemoryAccessLegal(mory_addr)) throw MemoryException(mory_addr);
+    this->mmry[mory_addr] = data;
+}
+
+void Memory::write(u16 mory_addr, std::span<const u8> write_data) {
+    if (!this->isMemoryAccessLegal(mory_addr)) throw MemoryException(mory_addr);
+
+    for (u8 i = 0; i < write_data.size(); i++)
+        this->mmry[mory_addr + i] = write_data[i];
+}
+
+u16 Memory::getFontAddr(u8 hxdcml_font_vl) const {
+    return 0x000 + (hxdcml_font_vl * 5);
 }

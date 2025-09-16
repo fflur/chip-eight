@@ -1,7 +1,7 @@
 #include <registers.hpp>
 
 bool GeneralRegisters::isAccessLegal(u8 rgtr_x) const {
-    if ((rgtr_x > 14) || (rgtr_x < 0)) return true;
+    if (rgtr_x <= 14) return true;
     return false;
 }
 
