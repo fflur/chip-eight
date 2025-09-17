@@ -46,11 +46,8 @@ void Memory::read(u16 mory_addr, std::vector<u8>& data_bffr) const {
     if (!this->isMemoryAccessLegal(mory_addr, data_bffr.size()))
         throw MemoryException(mory_addr);
 
-
-    // Use std::size_t for the loop index to prevent overflow
-    for (std::size_t i = 0; i < data_bffr.size(); ++i)
+    for (usize i = 0; i < data_bffr.size(); ++i)
         data_bffr[i] = this->mmry[mory_addr + i];
-
 }
 
 void Memory::write(u16 mory_addr, u8 data) {
@@ -58,11 +55,11 @@ void Memory::write(u16 mory_addr, u8 data) {
     this->mmry[mory_addr] = data;
 }
 
-void Memory::write(u16 mory_addr, std::span<const u8> write_data) {
-    if (!this->isMemoryAccessLegal(mory_addr)) throw MemoryException(mory_addr);
+void Memory::write(u16 mory_addr, std::vector<u8> data_bffr) {
+    if (!this->isMemoryAccessLegal(mory_addr, data_bffr.size())) throw MemoryException(mory_addr);
 
-    for (u8 i = 0; i < write_data.size(); i++)
-        this->mmry[mory_addr + i] = write_data[i];
+    for (u8 i = 0; i < data_bffr.size(); i++)
+        this->mmry[mory_addr + i] = data_bffr[i];
 }
 
 u16 Memory::getFontAddr(u8 hxdcml_font_vl) const {

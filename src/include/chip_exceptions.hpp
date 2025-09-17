@@ -1,5 +1,6 @@
 #pragma once
 #include <exception>
+#include <vector>
 #include <string>
 #include <chip_types.hpp>
 

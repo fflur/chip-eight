@@ -58,3 +58,18 @@ class ProgramCounter {
     // Reset the program counter to 0.
     void reset();
 };
+
+class Timer {
+    private:
+    u8 timer_value;
+
+    public:
+    // Set the value of the timer.
+    void set(u8);
+    // Get the value of the timer.
+    u8 get() const;
+    // Decrement the timer by 1 if it's greater than 0.
+    void decrement();
+    // Reset the timer to 0.
+    void reset();
+};

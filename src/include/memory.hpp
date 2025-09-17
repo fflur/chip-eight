@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 #include <array>
 #include <chip_eight_constants.hpp>
 #include <chip_exceptions.hpp>
@@ -20,8 +21,8 @@ class Memory {
     usize totalMemorySize() const noexcept;
     u8 read(u16) const; // throws MemoryException
     void read(u16, std::vector<u8>&) const; // throws MemoryException
-    void write(u16, u8);
-    void write(u16, std::span<const u8>);
+    void write(u16, u8); // throws MemoryException
+    void write(u16, std::vector<u8>); // throws MemoryException
     u16 getFontAddr(u8) const;
 };
 

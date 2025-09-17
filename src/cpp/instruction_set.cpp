@@ -221,7 +221,7 @@ void InstructionSetExecutor::displaySprite(u8 rgtr_x, u8 rgtr_y, u8 n_byte) {
         sprite_data // Buffer to store read data.
     );
 
-    this->dspy->renderSprite(sprite_data, x_coord, y_coord, n_byte);
+    this->dspy->renderSprite(sprite_data, x_coord, y_coord);
 
     if (this->dspy->hasPixelErased())
         this->gnrl_rgrs.setFlag(1);
