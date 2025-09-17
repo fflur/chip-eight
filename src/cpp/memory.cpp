@@ -23,7 +23,7 @@ Memory::Memory() {
     for (u8 i = 0; i < fonts.size(); i++) this->mmry[i] = fonts[i];
 }
 
-usize Memory::total_memory_size() const noexcept {
+usize Memory::totalMemorySize() const noexcept {
     return this->mmry.size();
 }
 
@@ -32,16 +32,25 @@ bool Memory::isMemoryAccessLegal(u16 addr) const noexcept {
     return true;
 }
 
+bool Memory::isMemoryAccessLegal(u16 addr, u16 len) const noexcept {
+    if (addr <= 0x01FF || (addr + len) > 0x0FFF) return false;
+    return true;
+}
+
 u8 Memory::read(u16 mory_addr) const {
     if (!this->isMemoryAccessLegal(mory_addr)) throw MemoryException(mory_addr);
     return this->mmry[mory_addr];
 }
 
-void Memory::read(u16 mory_addr, std::span<u8> read_data) const {
-    if (!this->isMemoryAccessLegal(mory_addr)) throw MemoryException(mory_addr);
+void Memory::read(u16 mory_addr, std::vector<u8>& data_bffr) const {
+    if (!this->isMemoryAccessLegal(mory_addr, data_bffr.size()))
+        throw MemoryException(mory_addr);
 
-    for (u8 i = 0; i < read_data.size(); i++)
-        read_data[i] = this->mmry[mory_addr + i];
+
+    // Use std::size_t for the loop index to prevent overflow
+    for (std::size_t i = 0; i < data_bffr.size(); ++i)
+        data_bffr[i] = this->mmry[mory_addr + i];
+
 }
 
 void Memory::write(u16 mory_addr, u8 data) {

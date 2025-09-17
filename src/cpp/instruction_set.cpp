@@ -214,12 +214,11 @@ void InstructionSetExecutor::doAndWithRandom(u8 rgtr_x, u8 value) {
 void InstructionSetExecutor::displaySprite(u8 rgtr_x, u8 rgtr_y, u8 n_byte) {
     u8 x_coord = this->gnrl_rgrs.read(rgtr_x);
     u8 y_coord = this->gnrl_rgrs.read(rgtr_y);
-    u8* sprite_data = new u8[n_byte];
+    std::vector<u8> sprite_data;
 
     this->mmry.read(
-        this->indx_rgtr.get(),
-        sprite_data,
-        n_byte
+        this->indx_rgtr.get(), // Read from this memory address.
+        sprite_data // Buffer to store read data.
     );
 
     this->dspy->renderSprite(sprite_data, x_coord, y_coord, n_byte);
@@ -228,9 +227,6 @@ void InstructionSetExecutor::displaySprite(u8 rgtr_x, u8 rgtr_y, u8 n_byte) {
         this->gnrl_rgrs.setFlag(1);
     else
         this->gnrl_rgrs.setFlag(0);
-
-    delete[] sprite_data;
-    sprite_data = nullptr;
 }
 
 //Ex9E

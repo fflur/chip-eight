@@ -13,12 +13,13 @@ class Memory {
     std::array<u8, MEMORY_SIZE> mmry;
 
     bool isMemoryAccessLegal(u16) const noexcept;
+    bool isMemoryAccessLegal(u16, u16) const noexcept;
 
     public:
     Memory();
-    usize total_memory_size() const noexcept;
+    usize totalMemorySize() const noexcept;
     u8 read(u16) const; // throws MemoryException
-    void read(u16, std::span<u8>) const; // throws MemoryException
+    void read(u16, std::vector<u8>&) const; // throws MemoryException
     void write(u16, u8);
     void write(u16, std::span<const u8>);
     u16 getFontAddr(u8) const;
