@@ -229,81 +229,92 @@ void InstructionSetExecutor::displaySprite(u8 rgtr_x, u8 rgtr_y, u8 n_byte) {
         this->gnrl_rgrs.setFlag(0);
 }
 
-//Ex9E
+// Ex9E - Skips the next instruction if the key stored in Vx is pressed.
+// The interpreter checks the keyboard, and if the key corresponding to the
+// value of Vx is currently in the down position, PC is increased by 2.
 void InstructionSetExecutor::skipInstructionIfKey(u8 rgtr_x) {
-    u8 key_value = this->rgtr_mngr->getRegisterValue(rgtr_x);
+    u8 key_value = this->gnrl_rgrs.read(rgtr_x);
     if (this->cnsl->isKeyPressed(key_value))
-        this->rgtr_mngr->program_counter += 2;
+        this->pgrm_cntr.increment();
 }
 
-//ExA1
+// ExA1 - Skips the next instruction if the key stored in Vx is not pressed. The interpreter
+// checks the keyboard, and if the key corresponding to the value of Vx is
+// currently in the up position, PC is increased by 2.
 void InstructionSetExecutor::skipInstructionIfKeyNot(u8 rgtr_x) {
-    u8 key_value = this->rgtr_mngr->getRegisterValue(rgtr_x);
+    u8 key_value = this->gnrl_rgrs.read(rgtr_x);
     if (!this->cnsl->isKeyPressed(key_value))
-        this->rgtr_mngr->program_counter += 2;
+        this->pgrm_cntr.increment();
 }
 
-//Fx07
+// Fx07 - Sets Vx = delay timer value. The interpreter reads the value of the delay
+// timer, and writes it to register Vx.
 void InstructionSetExecutor::setDelayTimerValue(u8 rgtr_x) {
-    this->rgtr_mngr->setRegisterValue(
+    this->gnrl_rgrs.write(
         rgtr_x,
-        this->rgtr_mngr->getDelayTimer()
+        this->dely_tmer.get()
     );
 }
 
-//Fx0A
+// Fx0A - A key press is awaited, and then stored in Vx. The interpreter
+// halts execution until a key is pressed, then stores the value of that key
+// in Vx.
 void InstructionSetExecutor::waitForKey(u8 rgtr_x) {
-    this->rgtr_mngr->setRegisterValue(
-        rgtr_x,
-        this->cnsl->getKey()
-    );
+    u8 key = this->cnsl->getKey();
+    this->gnrl_rgrs.write(rgtr_x, key);
 }
 
-//Fx15
+// Fx15 - Sets the delay timer to Vx. The interpreter sets the delay timer to
+// the value of Vx.
 void InstructionSetExecutor::setDelayTimer(u8 rgtr_x) {
-    this->rgtr_mngr->setDelayTimer(
-        this->rgtr_mngr->getRegisterValue(rgtr_x)
+    this->dely_tmer.set(
+        this->gnrl_rgrs.read(rgtr_x)
     );
 }
 
-//Fx18
+// Fx18 - Set sound timer = Vx. ST is set equal to the value of Vx.
 void InstructionSetExecutor::setSoundTimer(u8 rgtr_x) {
-    this->rgtr_mngr->setSoundTimer(
-        this->rgtr_mngr->getRegisterValue(rgtr_x)
+    this->sund_tmer.set(
+        this->gnrl_rgrs.read(rgtr_x)
     );
 }
 
-//Fx1E
+// Fx1E - Set I = I + Vx. The values of I and Vx are added, and the results
+// are stored in I.
 void InstructionSetExecutor::addStoreInRegI(u8 rgtr_x) {
-    this->rgtr_mngr->setMemoryAddress(
-        this->rgtr_mngr->getMemoryAddress() +
-        this->rgtr_mngr->getRegisterValue(rgtr_x)
+    this->indx_rgtr.set(
+        this->indx_rgtr.get() + this->gnrl_rgrs.read(rgtr_x)
     );
 }
 
-//Fx29
+// Fx29 - Set I = location of sprite for digit Vx. The value of I is set to the
+// location for the hexadecimal sprite corresponding to the value of Vx. See
+// section 2.4, Display, for more information on the Chip-8 hexadecimal font.
 void InstructionSetExecutor::setFontSpriteLocation(u8 hex_val) {
-    this->rgtr_mngr->setMemoryAddress(
-        this->mmory->getFontAddr(hex_val)
+    this->indx_rgtr.set(
+        this->mmry.getFontAddr(hex_val)
     );
 }
 
-//Fx33
+// Store BCD representation of Vx in memory locations I, I+1, and I+2. The
+// interpreter takes the decimal value of Vx, and places the hundreds digit in
+// memory at location in I, the tens digit at location I+1, and the ones digit
+// at location I+2.
 void InstructionSetExecutor::storeBCDOf(u8 rgtr_x) {
-    std::array<u8, 3> digits;
-    u8 num = this->rgtr_mngr->getRegisterValue(rgtr_x);
+    std::vector<u8> digits;
+    u8 nmbr = this->gnrl_rgrs.read(rgtr_x);
     u8 i = 0;
 
-    while (num != 0) {
-        digits[i++] = num % 10;
-        num /= 10;
+    while (nmbr != 0) {
+        digits[i++] = nmbr % 10;
+        nmbr /= 10;
     }
 
     u8 k = 2;
 
     for(u8 digit : digits) {
-        this->mmory->writeByte(
-            this->rgtr_mngr->getMemoryAddress() + k,
+        this->mmry.write(
+            this->indx_rgtr.get() + k,
             digit
         );
 
@@ -311,37 +322,29 @@ void InstructionSetExecutor::storeBCDOf(u8 rgtr_x) {
     }
 }
 
-//Fx55
+// Store registers V0 through Vx in memory starting at location I. The
+// interpreter copies the values of registers V0 through Vx into memory,
+// starting at the address in I.
 void InstructionSetExecutor::writeToMemory(u8 rgtr_x) {
-    std::vector<u8> reg_data(rgtr_x + 1);
+    std::vector<u8> data_bffr;
 
-    for (u8 i = 0; i < rgtr_x + 1; i++)
-        reg_data[i] = this->rgtr_mngr->getRegisterValue(i);
+    for (u8 i = 0; i <= rgtr_x; ++i)
+        data_bffr.push_back(this->gnrl_rgrs.read(i));
 
-    this->mmory->write(
-        this->rgtr_mngr->getMemoryAddress(),
-        reg_data.data(),
-        reg_data.size()
+    this->mmry.write(
+        this->indx_rgtr.get(),
+        data_bffr
     );
 }
 
-//Fx65
+// Fx65 - Read registers V0 through Vx from memory starting at location I. The
+// interpreter reads values from memory starting at location I into registers
+// V0 through Vx.
 void InstructionSetExecutor::readFromMemory(u8 rgtr_x) {
-    u8* reg_data = new u8[rgtr_x + 1];
-
-    this->mmory->read(
-        this->rgtr_mngr->getMemoryAddress(),
-        reg_data,
-        rgtr_x + 1
-    );
-
-    for (u8 i = 0; i < rgtr_x + 1; i++)
-        this->rgtr_mngr->setRegisterValue(i, reg_data[i]);
-
-    delete[] reg_data;
-    reg_data = nullptr;
-    this->rgtr_mngr->setMemoryAddress(
-        this->rgtr_mngr->getMemoryAddress() + rgtr_x + 1
+    std::vector<u8> data_bffr;
+    this->mmry.read(
+        this->indx_rgtr.get(),
+        data_bffr
     );
 }
 

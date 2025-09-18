@@ -38,6 +38,8 @@ class InstructionSetExecutor {
     ProgramCounter pgrm_cntr;
     Stack stck;
     Memory mmry;
+    Timer dely_tmer;
+    Timer sund_tmer;
     Display* dspy;
     Console* cnsl;
 
@@ -69,15 +71,15 @@ class InstructionSetExecutor {
     void displaySprite(u8, u8, u8); //Dxyn // TODO
     void skipInstructionIfKey(u8); //Ex9E // TODO
     void skipInstructionIfKeyNot(u8); //ExA1 // TODO
-    void setDelayTimerValue(u8); //Fx07 // TODO
+    void setDelayTimerValue(u8); //Fx07
     void waitForKey(u8); //Fx0A // TODO
-    void setDelayTimer(u8); //Fx15 // TODO
-    void setSoundTimer(u8); //Fx18 // TODO
-    void addStoreInRegI(u8); //Fx1E // TODO
-    void setFontSpriteLocation(u8); // Fx29 // TODO
-    void storeBCDOf(u8); // Fx33 // TODO
-    void writeToMemory(u8); //Fx55 // TODO
-    void readFromMemory(u8); // Fx65 // TODO
+    void setDelayTimer(u8); //Fx15
+    void setSoundTimer(u8); //Fx18
+    void addStoreInRegI(u8); //Fx1E
+    void setFontSpriteLocation(u8); // Fx29
+    void storeBCDOf(u8); // Fx33
+    void writeToMemory(u8); //Fx55
+    void readFromMemory(u8); // Fx65
 };
 
 class InstructionDecoder {
