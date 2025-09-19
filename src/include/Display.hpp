@@ -1,6 +1,4 @@
-#ifndef DISPLAY_HPP
-#define DISPLAY_HPP
-
+#pragma once
 #include <iostream>
 #include <SDL2/SDL_error.h>
 #include <SDL2/SDL_video.h>
@@ -27,8 +25,6 @@ class MonochromeDisplay : public Display {
         MonochromeDisplay(std::string);
         ~MonochromeDisplay();
         bool hasPixelErased() override;
-        void renderSprite(u8*, u8, u8, u8) override;
+        void renderSprite(std::vector<u8>, u8, u8) override;
         void clearScreen() override;
 };
-
-#endif

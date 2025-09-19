@@ -139,7 +139,7 @@ void InstructionSetExecutor::subAndBorrow(u8 rgtr_x, u8 rgtr_y) {
 // 8xy6 - Set Vx = Vx SHR 1. Stores the least significant bit of Vx in VF,
 // then shifts Vx to the right by 1 effectively dividing it by 2.
 void InstructionSetExecutor::carryAndLSB(u8 rgtr_x) {
-    if ((this->gnrl_rgrs.read(rgtr_x) & 0b00000001) == 1)
+    if ((this->gnrl_rgrs.read(rgtr_x) & 0x01) == 1)
         this->gnrl_rgrs.setFlag(1);
     else
         this->gnrl_rgrs.setFlag(0);
@@ -165,16 +165,21 @@ void InstructionSetExecutor::subtractAndFlag(u8 rgtr_x, u8 rgtr_y) {
 
 // 8xyE - Set Vx = Vx SHL 1. If the MSB of Vx is 1, then VF is set to 1,
 // otherwise 0. Then Vx is multiplied by 2.
-void InstructionSetExecutor::carryAndMSB(u8 rgtr_x, u8 rgtr_y) {
-    if ((this->gnrl_rgrs.read(rgtr_x) & 0b10000000) == 0b10000000)
-        this->gnrl_rgrs.setFlag(1);
-    else
-        this->gnrl_rgrs.setFlag(0);
+void InstructionSetExecutor::carryAndMSB(u8 rgtr_x) {
+    u8 vx_value = this->gnrl_rgrs.read(rgtr_x);
 
-    this->gnrl_rgrs.write(
-        rgtr_x,
-        (this->gnrl_rgrs.read(rgtr_x) << 1) & 0xFF
-    );
+    // Check if the most significant bit (MSB) of Vx is 1 (0x80)
+    // The result of the bitwise AND will be 0x80 if the MSB is 1,
+    // otherwise it will be 0
+    if ((vx_value & 0x80) == 0x80) this->gnrl_rgrs.setFlag(1);
+    else this->gnrl_rgrs.setFlag(0);
+
+    // Shift the value of Vx left by 1
+    // This effectively multiplies the value by 2
+    u8 shifted_value = vx_value << 1;
+
+    // Write the new shifted value back to the register Vx
+    this->gnrl_rgrs.write(rgtr_x, shifted_value);
 }
 
 // 9xy0 - Skips the next instruction if Vx != Vy. The interpreter compares
@@ -214,7 +219,7 @@ void InstructionSetExecutor::doAndWithRandom(u8 rgtr_x, u8 value) {
 void InstructionSetExecutor::displaySprite(u8 rgtr_x, u8 rgtr_y, u8 n_byte) {
     u8 x_coord = this->gnrl_rgrs.read(rgtr_x);
     u8 y_coord = this->gnrl_rgrs.read(rgtr_y);
-    std::vector<u8> sprite_data;
+    std::vector<u8> sprite_data(n_byte);
 
     this->mmry.read(
         this->indx_rgtr.get(), // Read from this memory address.
@@ -341,7 +346,7 @@ void InstructionSetExecutor::writeToMemory(u8 rgtr_x) {
 // interpreter reads values from memory starting at location I into registers
 // V0 through Vx.
 void InstructionSetExecutor::readFromMemory(u8 rgtr_x) {
-    std::vector<u8> data_bffr;
+    std::vector<u8> data_bffr(rgtr_x + 1);
     this->mmry.read(
         this->indx_rgtr.get(),
         data_bffr
@@ -574,10 +579,7 @@ void InstructionDecoder::decodeEightPrefix() {
             break;
 
         case 0xE:
-            this->inst_exec->carryAndMSB(
-                this->nibbles[1],
-                this->nibbles[2]
-            );
+            this->inst_exec->carryAndMSB(this->nibbles[1]);
             break;
 
         default:

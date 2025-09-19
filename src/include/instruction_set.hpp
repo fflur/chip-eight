@@ -63,7 +63,9 @@ class InstructionSetExecutor {
     void subAndBorrow(u8, u8); //8xy5
     void carryAndLSB(u8); //8xy6
     void subtractAndFlag(u8, u8); //8xy7
-    void carryAndMSB(u8, u8); //8xyE
+    // The value of register y is ignored. Therefore, we don't need it here.
+    // And in InstructionDecoder::decodeEightPrefix as well. For 8xyE.
+    void carryAndMSB(u8); //8xyE
     void skipInstructionIfNotReg(u8, u8); //9xy0
     void setRegI(u16); //Annn
     void jumpToAddrWithRegZero(u16); //Bnnn

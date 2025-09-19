@@ -55,37 +55,34 @@ MonochromeDisplay::~MonochromeDisplay() {
 }
 
 void MonochromeDisplay::renderSprite(
-    u8* ptr_sprite,
-    u8  array_len,
-    u8  x_coord,
-    u8  y_coord
+    std::vector<u8> sprite,
+    u8 x_coord,
+    u8 y_coord
 ) {
     this->has_px_erased = false;
-    u8 times = 7;
-    u8 sprite_bits[array_len][8];
+    size_t array_len = sprite.size();
+    std::vector<std::vector<u8>> sprite_bits(array_len, std::vector<u8>(8, 0));
 
-    for (u8 i = 0; i < array_len; i++) {
-        for (u8 j = 0; j < 8; j++) {
-            u8 extracted_bit = *(ptr_sprite + i) & (0b1 << times);
-            sprite_bits[i][j] = extracted_bit >> times;
-            times -= 1;
+    // Extract bits for each sprite byte into sprite_bits
+    for (size_t i = 0; i < array_len; i++) {
+        u8 sprite_byte = sprite[i];
+        for (int j = 0; j < 8; j++) {
+            // Extract bit j (from MSB to LSB)
+            u8 extracted_bit = (sprite_byte & (0b10000000 >> j)) ? 1 : 0;
+            sprite_bits[i][j] = extracted_bit;
         }
-
-        times = 7;
     }
 
-    //Xor'ing to current screen. Wrapping around the screen.
-    for (u8 i = 0; i < array_len; i++)
-        for (u8 j = 0; j < 8; j++) {
-            u8 x =
-                i + y_coord >= this->chip_eight_h ?
-                    (i + y_coord) - this->chip_eight_h : i + y_coord
-            ;
+    // XOR to current screen, with wrapping
+    for (size_t i = 0; i < array_len; i++) {
+        for (int j = 0; j < 8; j++) {
+            u8 x = (i + y_coord >= static_cast<u8>(this->chip_eight_h)) ?
+                (i + y_coord) - static_cast<u8>(this->chip_eight_h) :
+                (i + y_coord);
 
-            u8 y =
-                j + x_coord >= this->chip_eight_w ?
-                (j + x_coord) - this->chip_eight_w : j + x_coord
-            ;
+            u8 y = (j + x_coord >= static_cast<u8>(this->chip_eight_w)) ?
+                (j + x_coord) - static_cast<u8>(this->chip_eight_w) :
+                (j + x_coord);
 
             u8 bin_fr_curr_state = this->binary_frame[x][y];
             this->binary_frame[x][y] ^= sprite_bits[i][j];
@@ -93,10 +90,10 @@ void MonochromeDisplay::renderSprite(
             if (this->binary_frame[x][y] < bin_fr_curr_state)
                 this->has_px_erased = true;
         }
-
-    ptr_sprite = nullptr;
+    }
     this->renderToScreen();
 }
+
 
 // Maps 0 to black and 1 to white and presents on screen.
 void MonochromeDisplay::renderToScreen() {
