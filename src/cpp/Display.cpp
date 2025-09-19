@@ -60,11 +60,11 @@ void MonochromeDisplay::renderSprite(
     u8 y_coord
 ) {
     this->has_px_erased = false;
-    size_t array_len = sprite.size();
+    usize array_len = sprite.size();
     std::vector<std::vector<u8>> sprite_bits(array_len, std::vector<u8>(8, 0));
 
     // Extract bits for each sprite byte into sprite_bits
-    for (size_t i = 0; i < array_len; i++) {
+    for (usize i = 0; i < array_len; i++) {
         u8 sprite_byte = sprite[i];
         for (int j = 0; j < 8; j++) {
             // Extract bit j (from MSB to LSB)
@@ -74,7 +74,7 @@ void MonochromeDisplay::renderSprite(
     }
 
     // XOR to current screen, with wrapping
-    for (size_t i = 0; i < array_len; i++) {
+    for (usize i = 0; i < array_len; i++) {
         for (int j = 0; j < 8; j++) {
             u8 x = (i + y_coord >= static_cast<u8>(this->chip_eight_h)) ?
                 (i + y_coord) - static_cast<u8>(this->chip_eight_h) :
