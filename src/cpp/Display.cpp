@@ -55,7 +55,7 @@ MonochromeDisplay::~MonochromeDisplay() {
 }
 
 void MonochromeDisplay::renderSprite(
-    std::vector<u8> sprite,
+    std::vector<u8>& sprite,
     u8 x_coord,
     u8 y_coord
 ) {

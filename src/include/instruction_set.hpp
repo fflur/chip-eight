@@ -11,7 +11,7 @@
 class Display {
     public:
     virtual ~Display() = default;
-    virtual void renderSprite(std::vector<u8>, u8, u8) = 0;
+    virtual void renderSprite(std::vector<u8>&, u8, u8) = 0;
     virtual bool hasPixelErased() = 0;
     virtual void clearScreen() = 0;
 };

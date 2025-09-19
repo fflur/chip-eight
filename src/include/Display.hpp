@@ -25,6 +25,6 @@ class MonochromeDisplay : public Display {
         MonochromeDisplay(std::string);
         ~MonochromeDisplay();
         bool hasPixelErased() override;
-        void renderSprite(std::vector<u8>, u8, u8) override;
+        void renderSprite(std::vector<u8>&, u8, u8) override;
         void clearScreen() override;
 };
