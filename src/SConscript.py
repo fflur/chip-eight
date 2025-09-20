@@ -12,13 +12,15 @@ def compile():
     stck_ob = evrm.Object('cpp/stack.cpp')
     nstrction_set_ob = evrm.Object('cpp/instruction_set.cpp')
     dspy_ob = evrm.Object('cpp/display.cpp')
+    cnsl_ob = evrm.Object('cpp/console.cpp')
 
     # Object files dependencies.
     evrm.Depends(rgtr_ob, xcps_ob)
     evrm.Depends(mmry_ob, xcps_ob)
     evrm.Depends(stck_ob, xcps_ob)
     evrm.Depends(nstrction_set_ob, [rgtr_ob, mmry_ob, stck_ob])
-    evrm.Depends(dspy_ob, rgtr_ob)
+    evrm.Depends(dspy_ob, nstrction_set_ob)
+    evrm.Depends(cnsl_ob, nstrction_set_ob)
     return
 
 compile()

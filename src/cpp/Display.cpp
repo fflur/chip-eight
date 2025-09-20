@@ -51,7 +51,8 @@ MonochromeDisplay::MonochromeDisplay(std::string win_title) {
 MonochromeDisplay::~MonochromeDisplay() {
     SDL_DestroyRenderer(this->renderer);
     SDL_DestroyWindow(this->window);
-    window, renderer = nullptr;
+    window = nullptr;
+    renderer = nullptr;
 }
 
 void MonochromeDisplay::renderSprite(
@@ -68,7 +69,7 @@ void MonochromeDisplay::renderSprite(
         u8 sprite_byte = sprite[i];
         for (int j = 0; j < 8; j++) {
             // Extract bit j (from MSB to LSB)
-            u8 extracted_bit = (sprite_byte & (0b10000000 >> j)) ? 1 : 0;
+            u8 extracted_bit = (sprite_byte & (0x80 >> j)) ? 1 : 0;
             sprite_bits[i][j] = extracted_bit;
         }
     }
@@ -118,7 +119,7 @@ bool MonochromeDisplay::hasPixelErased() {
 void MonochromeDisplay::clearScreen() {
     for (u8 i = 0; i < this->chip_eight_h; i++)
         for (u8 j = 0; j < this->chip_eight_w; j++)
-            this->binary_frame[i][j] = 0b0;
+            this->binary_frame[i][j] = 0x0;
 
     this->renderToScreen();
 }

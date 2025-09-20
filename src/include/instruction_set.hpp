@@ -21,6 +21,7 @@ class Console {
     virtual ~Console() = default;
     virtual bool isKeyPressed(u8) = 0;
     virtual u8 getKey() = 0;
+    virtual u8 waitForKey() = 0;
 };
 
 // This class is responsible for executing the instructions.
