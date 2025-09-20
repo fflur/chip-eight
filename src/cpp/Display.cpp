@@ -91,6 +91,7 @@ void MonochromeDisplay::renderSprite(
                 this->has_px_erased = true;
         }
     }
+
     this->renderToScreen();
 }
 

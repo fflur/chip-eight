@@ -4,7 +4,7 @@ import os
 # Setting the decider function to use 'content' as value.
 evrm.Decider('content')
 
-def Compile():
+def compile():
     # Source files to be compiled into object files.
     rgtr_ob = evrm.Object('cpp/registers.cpp')
     mmry_ob = evrm.Object('cpp/memory.cpp')
@@ -21,4 +21,4 @@ def Compile():
     evrm.Depends(dspy_ob, rgtr_ob)
     return
 
-Compile()
+compile()
