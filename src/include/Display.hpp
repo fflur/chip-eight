@@ -1,8 +1,6 @@
 #pragma once
 #include <iostream>
-#include <SDL2/SDL_error.h>
-#include <SDL2/SDL_video.h>
-#include <SDL2/SDL_render.h>
+#include <sdl_types.hpp>
 #include <instruction_set.hpp>
 
 class MonochromeDisplay : public Display {
@@ -15,9 +13,9 @@ class MonochromeDisplay : public Display {
         const float chip_eight_h = 32.0f;
         bool has_px_erased = false;
         u8 binary_frame[32][64];
-        SDL_Rect frame[32][64]; // 1 frame.
-        SDL_Window* window;
-        SDL_Renderer* renderer;
+        SDL2::Rectangle frame[32][64]; // 1 frame.
+        SDL2::Window* window;
+        SDL2::Renderer* renderer;
 
         void renderToScreen();
 
