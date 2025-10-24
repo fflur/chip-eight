@@ -1,7 +1,5 @@
 #include <display.hpp>
 
-//---MonochromeDisplay---//
-
 MonochromeDisplay::MonochromeDisplay(std::string win_title) {
     int exit_code;
 
@@ -38,7 +36,7 @@ MonochromeDisplay::MonochromeDisplay(std::string win_title) {
     SDL_SetRenderDrawColor(this->renderer, 0, 0, 0, 255);
     for (u8 i = 0; i < this->chip_eight_h; i++)
         for (u8 j = 0; j < this->chip_eight_w; j++) {
-            SDL_Rect pixel;
+            Rectangle pixel;
             pixel.w = this->each_px_w;
             pixel.h = this->each_px_h;
             pixel.x = this->each_px_w * j;
@@ -123,5 +121,3 @@ void MonochromeDisplay::clearScreen() {
 
     this->renderToScreen();
 }
-
-//---EoF---//

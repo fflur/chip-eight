@@ -19,8 +19,8 @@ class Display {
 class Console {
     public:
     virtual ~Console() = default;
-    virtual bool isKeyPressed(u8) = 0;
-    virtual u8 getKey() = 0;
+    virtual bool isKeyPressed(u8) const = 0;
+    virtual u8 getKey() const = 0;
     virtual u8 waitForKey() = 0;
 };
 

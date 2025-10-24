@@ -13,9 +13,9 @@ class MonochromeDisplay : public Display {
         const float chip_eight_h = 32.0f;
         bool has_px_erased = false;
         u8 binary_frame[32][64];
-        SDL2::Rectangle frame[32][64]; // 1 frame.
-        SDL2::Window* window;
-        SDL2::Renderer* renderer;
+        Rectangle frame[32][64]; // 1 frame.
+        Window* window;
+        Renderer* renderer;
 
         void renderToScreen();
 
