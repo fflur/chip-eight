@@ -5,7 +5,7 @@ import config
 evrm = Environment(
     # Using GNU C++ compiler.
     CXX = "g++",
-    # Using C++ 20 standard.
+    # Using C++ 11 standard.
     CXXFLAGS = ["-std=c++11", "-Wall", "-Wextra", "-Wpedantic", "-Werror"],
     # header files path
     CPPPATH = config.header_path,

@@ -5,11 +5,16 @@
 class HexConsole : public Console {
     private:
     Event evnt; // To store the event polled from SDL. Is a union.
+    KeyMap key_maps; // To map Chip-8 keys to SDL key symbols.
+    usize any_error;
+
 
     public:
-    bool isKeyPressed(u8) const override;
-    u8 getKey() const override;
-    u8 waitForKey() override;
+    HexConsole();
+    ~HexConsole() = default;
+    KeySymbol getKey() const override;
+    KeySymbol waitForKey() override;
+    u8 getMappedKey(Scancode) const override;
+    KeyboardEvent getKeyboardEvent() const override;
     u8 updateEvent();
-    Event getKeyboardEvent() const;
 };

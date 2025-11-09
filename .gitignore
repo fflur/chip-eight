@@ -1,3 +1,6 @@
 build/
 .sconsign.dblite
 config.py
+remove_src.ps1
+remove_all.ps1
+neovide_backtraces.log

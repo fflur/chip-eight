@@ -3,6 +3,7 @@
 #include <registers.hpp>
 #include <memory.hpp>
 #include <stack.hpp>
+#include <sdl_types.hpp>
 
 // This class represents the display interface. This is to inverse the control
 // and allow for different display implementations.
@@ -19,9 +20,10 @@ class Display {
 class Console {
     public:
     virtual ~Console() = default;
-    virtual bool isKeyPressed(u8) const = 0;
-    virtual u8 getKey() const = 0;
-    virtual u8 waitForKey() = 0;
+    virtual KeySymbol getKey() const = 0;
+    virtual KeySymbol waitForKey() = 0;
+    virtual u8 getMappedKey(Scancode) const = 0;
+    virtual KeyboardEvent getKeyboardEvent() const = 0;
 };
 
 // This class is responsible for executing the instructions.

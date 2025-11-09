@@ -238,8 +238,13 @@ void InstructionSetExecutor::displaySprite(u8 rgtr_x, u8 rgtr_y, u8 n_byte) {
 // The interpreter checks the keyboard, and if the key corresponding to the
 // value of Vx is currently in the down position, PC is increased by 2.
 void InstructionSetExecutor::skipInstructionIfKey(u8 rgtr_x) {
+    KeySymbol key_pressed = this->cnsl->getKey();
     u8 key_value = this->gnrl_rgrs.read(rgtr_x);
-    if (this->cnsl->isKeyPressed(key_value))
+
+    if(
+        this->cnsl->getMappedKey(key_pressed.scancode) == key_value &&
+        this->cnsl->getKeyboardEvent().type == SDL_KEYDOWN
+    )
         this->pgrm_cntr.increment();
 }
 
@@ -247,8 +252,13 @@ void InstructionSetExecutor::skipInstructionIfKey(u8 rgtr_x) {
 // checks the keyboard, and if the key corresponding to the value of Vx is
 // currently in the up position, PC is increased by 2.
 void InstructionSetExecutor::skipInstructionIfKeyNot(u8 rgtr_x) {
+    KeySymbol key_not_pressed = this->cnsl->getKey();
     u8 key_value = this->gnrl_rgrs.read(rgtr_x);
-    if (!this->cnsl->isKeyPressed(key_value))
+
+    if(
+        this->cnsl->getMappedKey(key_not_pressed.scancode) == key_value &&
+        this->cnsl->getKeyboardEvent().type == SDL_KEYUP
+    )
         this->pgrm_cntr.increment();
 }
 
@@ -265,8 +275,10 @@ void InstructionSetExecutor::setDelayTimerValue(u8 rgtr_x) {
 // halts execution until a key is pressed, then stores the value of that key
 // in Vx.
 void InstructionSetExecutor::waitForKey(u8 rgtr_x) {
-    u8 key = this->cnsl->getKey();
-    this->gnrl_rgrs.write(rgtr_x, key);
+    KeySymbol key_pressed = this->cnsl->waitForKey();
+    u8 key_value = this->cnsl->getMappedKey(key_pressed.scancode);
+
+    this->gnrl_rgrs.write(rgtr_x, key_value);
 }
 
 // Fx15 - Sets the delay timer to Vx. The interpreter sets the delay timer to

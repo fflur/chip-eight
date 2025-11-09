@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include <unordered_map>
 
 // Define fixed-width integer types for clarity and consistency.
 // We don't care how the compilers handles it internally,
